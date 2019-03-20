@@ -8,6 +8,11 @@ except ImportError:
     import urllib.parse as urlparse
 
 try:
+    from urllib import quote as urlquote
+except ImportError:
+    from urllib.parse import quote as urlquote
+
+try:
     from django import VERSION as DJANGO_VERSION
 except ImportError:
     DJANGO_VERSION = None
@@ -69,7 +74,7 @@ def config(env=DEFAULT_ENV, default=None, engine=None, conn_max_age=0, ssl_requi
     return config
 
 
-def parse(url, engine=None, conn_max_age=0, ssl_require=False):
+def parse(url, engine=None, conn_max_age=0, ssl_require=False, quote=False):
     """Parses a database URL."""
 
     if url == 'sqlite://:memory:':
@@ -84,6 +89,10 @@ def parse(url, engine=None, conn_max_age=0, ssl_require=False):
 
     # otherwise parse the url as normal
     config = {}
+
+    # handle special char
+    if quote:
+        url = urlquote(url, ':/@')
 
     url = urlparse.urlparse(url)
 

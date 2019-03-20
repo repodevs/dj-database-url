@@ -85,6 +85,17 @@ class DatabaseTestSuite(unittest.TestCase):
         assert url['PASSWORD'] == '#password'
         assert url['PORT'] == 5431
 
+    def test_postgres_parsing_with_special_characters_with_quote(self):
+        url = 'postgres://#user:p@s5#word@ec2-107-21-253-135.compute-1.amazonaws.com:5431/#database'
+        url = dj_database_url.parse(url, quote=True)
+
+        assert url['ENGINE'] == EXPECTED_POSTGRES_ENGINE
+        assert url['NAME'] == '#database'
+        assert url['HOST'] == 'ec2-107-21-253-135.compute-1.amazonaws.com'
+        assert url['USER'] == '#user'
+        assert url['PASSWORD'] == 'p@s5#word'
+        assert url['PORT'] == 5431
+
     def test_postgis_parsing(self):
         url = 'postgis://uf07k1i6d8ia0v:wegauwhgeuioweg@ec2-107-21-253-135.compute-1.amazonaws.com:5431/d8r82722r2kuvn'
         url = dj_database_url.parse(url)
